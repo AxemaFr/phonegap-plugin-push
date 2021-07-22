@@ -197,12 +197,15 @@ NSString *const pushPluginApplicationDidBecomeActiveNotification = @"pushPluginA
 {
     NSLog( @"NotificationCenter Handle push from foreground" );
     // custom code to handle push while app is in the foreground
-    PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
-    pushHandler.notificationMessage = notification.request.content.userInfo;
-    pushHandler.isInline = YES;
-    [pushHandler notificationReceived];
+    UNNotificationRequest* toast = notification.request;
+    if ([toast.trigger isKindOfClass:UNPushNotificationTrigger.class]) {
+        PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
+        pushHandler.notificationMessage = notification.request.content.userInfo;
+        pushHandler.isInline = YES;
+        [pushHandler notificationReceived];
 
-    completionHandler(UNNotificationPresentationOptionNone);
+        completionHandler(UNNotificationPresentationOptionNone);
+    }
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
